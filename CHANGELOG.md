@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 (2026-11-08)
+
+- README updates only, so npm shows the current README: a compatibility table and the exact `dsh plugin add` command, screenshots of the model picker and settings, and the dsh-plugin.org listing badge. No code changes.
+
 ## 0.1.1 (2026-11-03)
 
 - First release published from GitHub Actions through npm trusted publishing, with provenance. No code changes.
