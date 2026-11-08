@@ -1,0 +1,47 @@
+# Creates the GitHub Release for a version tag, with that version's section of
+# CHANGELOG.md as its notes. Runs after publish.yml succeeds for a v* tag.
+# Run it by hand (Actions → release → Run workflow) to create or update the
+# release for an existing tag.
+name: release
+
+on:
+  workflow_run:
+    workflows: [publish]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version tag, e.g. v0.1.2
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       startsWith(github.event.workflow_run.head_branch, 'v'))
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.event.workflow_run.head_branch }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      # The default branch, not the tag: its CHANGELOG.md has every version and
+      # older tags don't have the script.
+      - uses: actions/checkout@v4
+      - name: Notes from CHANGELOG.md
+        run: |
+          version="${TAG#v}"
+          node scripts/changelog-section.mjs "$version" > notes.md
+          printf '\nnpm: https://www.npmjs.com/package/%s/v/%s\n' \
+            "$(node -p "require('./package.json').name")" "$version" >> notes.md
+          cat notes.md
+      - name: Create or update the release
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release edit "$TAG" --title "$TAG" --notes-file notes.md
+          else
+            gh release create "$TAG" --verify-tag --title "$TAG" --notes-file notes.md
+          fi
