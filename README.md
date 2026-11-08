@@ -1,5 +1,7 @@
 # dsh-plugin-opencode-local
 
+[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/mateenahmed737/dsh-plugin-opencode-local)
+
 ## Why this exists
 
 I wanted to use OpenCode's models in DeepSeek Harness through the OpenCode CLI installed on my own machine, the way [T3 Code](https://github.com/pingdotgg/t3code) does. I couldn't find a DeepSeek Harness plugin that did that, so I built this one.
